@@ -1,0 +1,110 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Enterprise application user profile with assigned roles and credentials",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string", "maxLength": 100 },
+        "firstName": { "type": "string", "maxLength": 100 },
+        "lastName": { "type": "string", "maxLength": 100 },
+        "empCode": { "type": "string", "maxLength": 50 },
+        "department": { "type": "string", "maxLength": 100 },
+        "role": { "type": "string", "enum": ["ADMIN", "SECURITY", "HR", "HOST"] },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["username", "firstName", "lastName", "department", "role", "status"]
+    },
+    "GatePass": {
+      "title": "GatePass",
+      "description": "Visitor entry token and physical pass record for facility gate control",
+      "type": "object",
+      "properties": {
+        "passId": { "type": "string", "maxLength": 64 },
+        "dateKey": { "type": "string", "maxLength": 16 },
+        "seqNumber": { "type": "number" },
+        "name": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "company": { "type": "string", "maxLength": 150 },
+        "idType": { "type": "string", "maxLength": 50 },
+        "idNumber": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 50 },
+        "hostName": { "type": "string", "maxLength": 100 },
+        "purpose": { "type": "string", "maxLength": 255 },
+        "accessZone": { "type": "string", "maxLength": 100 },
+        "vehicle": { "type": "string", "maxLength": 50 },
+        "assets": { "type": "string", "maxLength": 255 },
+        "guardUser": { "type": "string", "maxLength": 100 },
+        "checkIn": { "type": "string", "maxLength": 50 },
+        "checkOut": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["INSIDE", "CHECKED_OUT", "CANCELLED", "SCHEDULED", "PRE_REGISTERED"] },
+        "photo": { "type": "string", "maxLength": 2048 },
+        "vehiclePhoto": { "type": "string", "maxLength": 2048 },
+        "assetsPhoto": { "type": "string", "maxLength": 2048 },
+        "ppe_helmet": { "type": "boolean" },
+        "ppe_vest": { "type": "boolean" },
+        "ppe_shoes": { "type": "boolean" },
+        "isPreRegistered": { "type": "boolean" },
+        "aiRiskScore": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+        "aiRiskAnalysis": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["passId", "dateKey", "name", "phone", "company", "category", "hostName", "purpose", "accessZone", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System and security audit events for regulatory compliance",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "actor_username": { "type": "string", "maxLength": 100 },
+        "actor_name": { "type": "string", "maxLength": 100 },
+        "actor_role": { "type": "string", "maxLength": 50 },
+        "action": { "type": "string", "maxLength": 100 },
+        "entity_name": { "type": "string", "maxLength": 100 },
+        "entity_id": { "type": "string", "maxLength": 100 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "ip_address": { "type": "string", "maxLength": 45 },
+        "severity": { "type": "string", "enum": ["INFO", "WARN", "CRITICAL"] }
+      },
+      "required": ["actor_username", "action", "entity_name", "entity_id", "timestamp", "severity"]
+    },
+    "SystemConfig": {
+      "title": "SystemConfig",
+      "description": "Global enterprise plant configuration, logo master, and field settings",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string", "maxLength": 150 },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "plantLocation": { "type": "string", "maxLength": 150 },
+        "logoUrl": { "type": "string", "maxLength": 2048 },
+        "primaryColor": { "type": "string", "maxLength": 30 },
+        "showLogoOnBadge": { "type": "boolean" },
+        "showLogoOnHeader": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "updatedBy": { "type": "string", "maxLength": 100 }
+      },
+      "required": ["companyName", "plantLocation"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User account and permission master records"
+    },
+    "/gatePasses/{passId}": {
+      "schema": "GatePass",
+      "description": "Active, scheduled, and past visitor gate passes"
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Immutable chronological system audit logs"
+    },
+    "/systemConfig/{configId}": {
+      "schema": "SystemConfig",
+      "description": "Plant branding and field configuration"
+    }
+  }
+}

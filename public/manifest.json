@@ -1,0 +1,22 @@
+{
+  "short_name": "VISITFLOW",
+  "name": "VISITFLOW — Enterprise Visitor Management System",
+  "description": "Enterprise-grade visitor management, security gate operations, and approval workflow platform.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#1e293b",
+  "display": "standalone",
+  "orientation": "any"
+}

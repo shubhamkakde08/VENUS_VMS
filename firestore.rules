@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default-deny all unlisted paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Validation for User Master
+    function isValidUser(data) {
+      return data.username is string && data.username.size() > 0 && data.username.size() <= 100
+        && data.firstName is string && data.firstName.size() > 0 && data.firstName.size() <= 100
+        && data.lastName is string && data.lastName.size() > 0 && data.lastName.size() <= 100
+        && data.department is string && data.department.size() <= 100
+        && data.role in ['ADMIN', 'SECURITY', 'HR', 'HOST']
+        && data.status in ['ACTIVE', 'INACTIVE'];
+    }
+
+    // Validation for Gate Pass
+    function isValidGatePass(data) {
+      return data.passId is string && data.passId.size() > 0 && data.passId.size() <= 64
+        && data.dateKey is string && data.dateKey.size() <= 16
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 150
+        && data.phone is string && data.phone.size() <= 30
+        && data.company is string && data.company.size() <= 150
+        && data.category is string && data.category.size() <= 50
+        && data.hostName is string && data.hostName.size() <= 100
+        && data.purpose is string && data.purpose.size() <= 255
+        && data.accessZone is string && data.accessZone.size() <= 100
+        && data.status in ['INSIDE', 'CHECKED_OUT', 'CANCELLED', 'SCHEDULED', 'PRE_REGISTERED'];
+    }
+
+    // Validation for Audit Log
+    function isValidAuditLog(data) {
+      return data.actor_username is string && data.actor_username.size() <= 100
+        && data.action is string && data.action.size() <= 100
+        && data.entity_name is string && data.entity_name.size() <= 100
+        && data.entity_id is string && data.entity_id.size() <= 100
+        && data.severity in ['INFO', 'WARN', 'CRITICAL'];
+    }
+
+    // Validation for System Config
+    function isValidSystemConfig(data) {
+      return data.companyName is string && data.companyName.size() <= 150
+        && data.plantLocation is string && data.plantLocation.size() <= 150;
+    }
+
+    // Rules for Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(userId) && isValidUser(incoming());
+      allow update: if isSignedIn() && isValidId(userId) && isValidUser(incoming());
+      allow delete: if isSignedIn() && isValidId(userId);
+    }
+
+    // Rules for Gate Passes collection
+    match /gatePasses/{passId} {
+      allow read: if true; // Public read for visitor pass verification & badge printing
+      allow create: if isValidId(passId) && isValidGatePass(incoming());
+      allow update: if isValidId(passId) && isValidGatePass(incoming());
+      allow delete: if isSignedIn() && isValidId(passId);
+    }
+
+    // Rules for Audit Logs (Write once, read for audits, no delete)
+    match /auditLogs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isValidId(logId) && isValidAuditLog(incoming());
+      allow update, delete: if false; // Audit records are immutable
+    }
+
+    // Rules for System Config
+    match /systemConfig/{configId} {
+      allow read: if true; // Branding and theme available across app
+      allow write: if isSignedIn() && isValidId(configId) && isValidSystemConfig(incoming());
+    }
+  }
+}

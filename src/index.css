@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+.barcode-lines {
+  background: repeating-linear-gradient(90deg, #1e293b 0px, #1e293b 2px, transparent 2px, transparent 4px, #1e293b 4px, #1e293b 7px, transparent 7px, transparent 9px);
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #printableBadgeSection, #printableBadgeSection * {
+    visibility: visible !important;
+  }
+  #printableBadgeSection {
+    position: fixed !important;
+    left: 50% !important;
+    top: 20px !important;
+    transform: translateX(-50%) !important;
+    width: 86mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: 2px solid #1C2E63 !important;
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

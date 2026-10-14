@@ -1,0 +1,10 @@
+{
+  "name": "Remix VISITFLOW — Enterprise Visitor Management System",
+  "description": "Comprehensive enterprise visitor management platform with multi-tenant company masters, role-based access control, visitor pre-registration, multi-tier approval workflows, dynamic QR passes, mobile security gate scanner, check-in/out tracking, audit logging, and reporting.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
